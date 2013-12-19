@@ -1,0 +1,81 @@
+//流水解码函数
+function flowHandle(param){
+	var flowStreamFinal = ""
+	var flowContentTidy = string.replace( param.flowContentRaw,'< , >',"|" )
+	var flowContentTable = string.split( flowContentTidy,'\n' )
+
+	//生成行过滤的匹配模板
+	var matching_template = ""
+	if( #param.rowFilter ){
+		matching_template = "<" + string.replace(param.rowFilter,",",">|<") + ">"
+		select(param.rowFilterType) {
+			case "关键字"
+				{ /* 模板变量matching_template无需改变 */ }
+			case "操作号"
+				{ matching_template = "\|" + matching_template + "\|" ++ param.userNumber ++ "\|" }
+			else
+				{ matching_template = "" }
+		}
+	}
+
+	//按行处理，再合并行
+	for(flow_line_key,flow_line_value in flowContentTable){
+		var flow_line_value_split = string.split(flow_line_value,"|")
+		var timestamp = tonumber(flow_line_value_split[5]) //上报的时间戳
+		var remark = tostring(flow_line_value_split[29]) //备注REMARK
+
+		//解析BASE32备注（先解码可保证"关键字"方式能匹配到准确的数据）
+		if ( string.startWith(remark,"base32") ){
+			var b32remark = Base32Decoder( string.replace(remark,"^base32","") )
+			b32remark = string.replace( b32remark,"|","_" ) //替换备注里面的竖线，容错『输出指定列』
+			flow_line_value = string.replace( flow_line_value,remark,b32remark )
+		}
+
+		//若过滤模版有值但匹配失败则跳过该行；若过滤模版为空则直接保留该行
+		if ( #matching_template and not( string.match(flow_line_value,matching_template) ) ) 
+			{ continue } //跳过以下处理，不保留该行数据
+
+		//解析上报时间戳，若失败则表明不是标准的流水记录行，跳过
+		if ( timestamp == null )
+			{ continue } //跳过以下处理，不保留该行数据
+		flow_line_value = string.replace( flow_line_value,timestamp,tostring( time(timestamp,"%Y/%m/%d-%H:%M:%S") ) )
+
+		//输出行中的指定列
+		if ( #param.colFilter ){
+			var line_pos = string.split( param.colFilter,"," )
+			var line_pin = string.split( flow_line_value,"|" )
+			flow_line_value = ""
+			for( k,v in line_pos ){
+				//flow_line_value += ( tostring(line_pin[tonumber(v)]) + '\t\t' )
+				flow_line_value += ( string.format("%9s",tostring(line_pin[tonumber(v)])) + ' ' )
+			}
+		}
+
+		flowStreamFinal += ( flow_line_value + '\r\n' )
+	}
+	
+	//流水列说明
+	var columnHeader = ""
+	var HeaderTable = {"版本号";"应用ID";"用户IP";"服务器IP";"上报时间【人类可读】";"所在平台";"大区ID";
+					"操作类型";"操作ID";"操作用户UID";"操作用户OPENID";"被操作用户UID";
+					"被操作用户OPENID";"用户等级";"操作来源";"物品ID";
+					"物品类别";"物品数量";"经验变化";"经验总量";"金币变化";
+					"金币总量";"游戏币变化值";"游戏币总量";"在线时长";"登录KEY";
+					"安全KEY校验结果";"反外挂扩展数据";"备注";"在线用户数"}
+
+	//添加流水列说明并返回
+	if ( #param.colFilter ){
+		var line_pos = string.split(param.colFilter,",")
+		for(k,v in line_pos){
+			//columnHeader += ( HeaderTable[tonumber(v)] + '\t' )
+			columnHeader += ( string.format("%9s",HeaderTable[tonumber(v)]) + ' ' )
+		}
+		return (columnHeader + '\r\n' + flowStreamFinal);
+	}
+	else {
+		for(k,v in HeaderTable){
+			columnHeader += ( v + " " )
+		}
+		return (columnHeader + '\r\n' + string.replace(flowStreamFinal,"|"," "));
+	}
+}

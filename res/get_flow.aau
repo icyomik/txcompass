@@ -1,0 +1,66 @@
+//流水下载函数
+get_flow = function(param){
+	//取HTTP状态码
+	var whttp = inet.whttp()
+	assert( whttp.beginRequest("http://compass.qq.com/dlogs?appid=" + param.appid) )
+	whttp.writeHeader(param.biscuit)
+	whttp.disableRedirects() //防止302跳转后得到200状态
+	var ok,stat,total = whttp.send()
+	whttp.close();
+
+	//根据状态码处理
+	if(stat != 200){ //没有权限，需要登录
+		return false, "ERR_NOLOGIN"; 
+	}
+	else { //有权限下载流水文件
+		var flowUrl = "http://compass.qq.com/dlogs?api=%E5%85%A8%E9%83%A8" //接口地址
+		flowUrl += ("&appid=" + param.appid) //罗盘编号
+		//flowUrl += ("&loc=" + param.locate) //地区
+		flowUrl += ("&domain=" + param.domain) //平台
+		flowUrl += ("&day=" + param.baseday) //基准日期
+		flowUrl += ("&startime=" + param.timeStart) //开始时间
+		flowUrl += ("&endtime=" + param.timeEnd) //结束时间
+		flowUrl += ("&opuid=" + param.user) //用户ID
+		flowUrl += ("&_format=" + "csv") //文件格式
+/*
+		whttp = inet.whttp()
+//		whttp.addHeaders = param.biscuit //被注释的这两行代码，和第三行效果一样
+//		flowContentRaw = whttp.get(flowUrl,"cookie:;") //XP系统必需加上"cookie:;"参数
+		flowContentRaw = whttp.get(flowUrl,param.biscuit)
+		whttp.close();
+*/		
+		flowContentRaw = win.invoke(
+			function(flowUrl,biscuit){
+				import inet.whttp;
+				
+				whttp = inet.whttp()
+				var invoke_flowContentRaw = whttp.get(flowUrl,biscuit)
+				whttp.close()
+				
+				return invoke_flowContentRaw; 
+			},flowUrl,param.biscuit
+		)
+
+		if(param.debug){
+			inDebugMode = function(){
+				bv = thread.get("built-in_variables")
+				io.open()
+				io.print('请求头:\n' + bv.head + '\n请求串:\n' + bv.url + '\n')
+				io.print( string.fromto(bv.flow,CP_UTF8,CP_ACP) )
+				execute("pause")
+				io.close()
+			}
+			
+			import thread;
+			thread.set("built-in_variables",{
+					head=param.biscuit;
+					url = flowUrl;
+					flow = flowContentRaw
+				}
+			)
+			thread.create(inDebugMode)
+		}
+
+		return true, flowContentRaw; 
+	}
+}

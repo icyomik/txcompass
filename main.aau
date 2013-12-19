@@ -1,174 +1,232 @@
-import win.ui
-import win.ui.atom
-import fsys.ini
+import win.ui;
+import win.ui.atom;
+import fsys;
+import fsys.ini;
+import fsys.dlg;
+import inet;
+import inet.whttp;
+loadcode("\res\b32decoder.aau")() //BASE32解码
+loadcode("\res\logger.aau")() //日志记录函数
+loadcode("\res\get_flow.aau")() //流水下载函数
+loadcode("\res\flow_handle.aau")() //流水解码函数
 /*DSG{{*/
-mainForm = ..win.form(text="腾讯罗盘解码器 by iCyOMiK";right=431;bottom=135;max=false;parent=...)
-mainForm.add(
-btn_fileSelect={cls="button";text="选择流水";left=344;top=16;right=416;bottom=40;z=3};
-btn_opcode={cls="button";text="流水解码";left=344;top=56;right=416;bottom=120;z=1};
-edit_columnFilter={cls="edit";left=128;top=56;right=328;bottom=80;align="center";border=1;edge=1;z=4};
-edit_filePath={cls="edit";left=16;top=16;right=328;bottom=40;align="center";border=1;edge=1;z=2};
-edit_opcode={cls="edit";left=128;top=96;right=328;bottom=120;align="center";border=1;edge=1;z=5};
-lbl_column={cls="static";text="流水显示列";left=16;top=56;right=120;bottom=81;align="center";color=0;font=LOGFONT( name='微软雅黑';h=-16 );transparent=1;z=7};
-lbl_opcode={cls="static";text="流水操作号";left=16;top=96;right=120;bottom=120;align="center";color=0;font=LOGFONT( name='微软雅黑';h=-16 );transparent=1;z=6}
+var winform = ..win.form( text="腾讯罗盘";parent=...;bottom=287;max=false;right=423;border="dialog frame" )
+winform.add( 
+cb_timeStart={ bottom=76;color=0;right=152;left=72;
+items={ "00:00";"02:00";"04:00";"06:00";"08:00";"10:00";"12:00";"14:00";"16:00";"18:00";"20:00";"22:00" };font=LOGFONT( name='宋体';h=-14 );z=11;top=56;mode="dropdownlist";edge=1;cls="combobox" };
+chk_debug={ bottom=144;color=0;text="DEBUG_MODE";left=296;top=120;font=LOGFONT( name='黑体';h=-14 );z=24;right=392;cls="checkbox" };
+btn_path={ bottom=192;color=0;right=392;left=296;top=168;font=LOGFONT( name='宋体';h=-14 );z=21;text="选择文件";cls="button" };
+gb_split={ bottom=160;color=0;right=392;left=32;top=144;font=LOGFONT( name='宋体';h=-14 );z=25;edge=1;cls="groupbox" };
+cb_timeEnd={ bottom=76;color=0;right=288;left=208;
+items={ "01:59";"03:59";"05:59";"07:59";"09:59";"11:59";"13:59";"15:59";"17:59";"19:59";"21:59";"23:59" };font=LOGFONT( name='宋体';h=-14 );z=12;top=56;mode="dropdownlist";edge=1;cls="combobox" };
+st_column={ bottom=232;align="center";right=112;left=24;top=192;font=LOGFONT( name='宋体';h=-14 );center=1;z=8;transparent=1;color=0;text="流水显示列";cls="static" };
+st_timeEnd={ bottom=88;align="center";right=208;left=160;top=48;font=LOGFONT( name='宋体';h=-14 );center=1;z=4;transparent=1;color=0;text="结束";cls="static" };
+ed_rowFilter={ bottom=256;color=0;right=288;left=112;top=232;font=LOGFONT( name='宋体';h=-14 );z=16;align="center";edge=1;cls="edit" };
+picturebox={ bottom=112;color=0;right=392;left=296;top=56;font=LOGFONT( name='宋体';h=-14 );z=23;notify=1;image=$"\mix\logo.jpg";cls="picturebox" };
+gb_frame={ bottom=272;color=0;right=408;left=16;top=0;font=LOGFONT( name='宋体';h=-14 );z=1;edge=1;cls="groupbox" };
+ed_path={ bottom=192;color=0;right=288;left=32;top=168;font=LOGFONT( name='宋体';h=-14 );z=13;align="center";edge=1;cls="edit" };
+st_user={ bottom=120;align="center";right=72;left=24;top=80;font=LOGFONT( name='宋体';h=-14 );center=1;z=6;transparent=1;color=0;text="用户";cls="static" };
+st_date={ bottom=144;align="center";right=72;left=24;top=120;font=LOGFONT( name='宋体';h=-14 );center=1;z=7;transparent=1;color=0;text="日期";cls="static" };
+btn_load={ bottom=144;color=0;right=288;left=218;top=88;font=LOGFONT( name='宋体';h=-14 );z=19;text="加载到
+缓冲区";cls="button" };
+cb_locate={ disabled=1;bottom=44;color=0;right=152;left=72;
+items={  };font=LOGFONT( name='宋体';h=-14 );z=9;top=24;mode="dropdownlist";edge=1;cls="combobox" };
+st_domain={ bottom=56;align="center";right=208;left=160;top=16;font=LOGFONT( name='宋体';h=-14 );center=1;z=3;transparent=1;color=0;text="平台";cls="static" };
+st_timeStart={ bottom=88;align="center";right=72;left=24;top=48;font=LOGFONT( name='宋体';h=-14 );center=1;z=5;transparent=1;color=0;text="开始";cls="static" };
+ed_colFilter={ bottom=224;color=0;right=288;left=112;top=200;font=LOGFONT( name='宋体';h=-14 );z=15;align="center";edge=1;cls="edit" };
+cb_rowFilter={ bottom=256;color=0;right=104;left=32;
+items={ "操作号";"关键字" };font=LOGFONT( name='宋体';h=-14 );z=26;top=232;mode="dropdownlist";edge=1;cls="combobox" };
+btn_login={ bottom=48;color=0;right=392;left=296;top=24;font=LOGFONT( name='宋体';h=-14 );z=20;text="罗盘登录";cls="button" };
+datetimepick={ bottom=144;color=0;right=168;left=72;top=120;font=LOGFONT( name='宋体';h=-14 );z=17;edge=1;cls="datetimepick" };
+cb_domain={ bottom=44;color=0;right=288;left=208;
+items={  };font=LOGFONT( name='宋体';h=-14 );z=10;top=24;mode="dropdownlist";edge=1;cls="combobox" };
+ed_user={ bottom=112;color=0;right=208;left=72;top=88;font=LOGFONT( name='宋体';h=-14 );z=14;align="center";edge=1;cls="edit" };
+st_locate={ bottom=56;align="center";right=72;left=24;top=16;font=LOGFONT( name='宋体';h=-14 );center=1;z=2;transparent=1;color=0;text="地区";cls="static" };
+btn_save={ bottom=144;color=0;right=216;left=176;top=120;font=LOGFONT( name='宋体';h=-14 );z=18;text="SAVE";cls="button" };
+btn_decode={ bottom=256;color=0;right=392;left=296;top=200;font=LOGFONT( name='宋体';h=-16 );z=22;text="流水解码";cls="button" }
 )
 /*}}*/
 
-//BASE32解码函数
-function Base32Decoder(b32str=""){
-	if(#b32str){
-		var mbit = 0
-		var vbit = 0
-		var b32ret = ""
-		var j = string.len(b32str)
-		for(i=1;j;1){
-			mbit <<= 5
-			if(b32str[i] >= 'a'# and b32str[i] <= 'z'#)
-				{mbit += (b32str[i] - 97)}
-			elseif(b32str[i] >= '2'# and b32str[i] <= '7'#)
-				{mbit += (b32str[[i]] + 24)}
-			vbit += 5
-			while(vbit >= 8){
-				vbit -= 8
-				b32ret += string.pack(mbit >> vbit)
-				mbit &= ((1 << vbit) - 1)
-			}
+//双击打开网页罗盘
+winform.picturebox.wndproc = function(hwnd,message,wParam,lParam){
+	select(message) {
+		case 0x203/*_WM_LBUTTONDBLCLK*/ {
+			import process;
+			process.execute("http://compass.qq.com/dlogs?appid=" ++ iniFile.read("rabbet","appid","0"))
 		}
-		return b32ret; 
 	}
-	else {
-		return b32str; 
-	}
+	//无返回值则继续调用默认回调函数
 }
 
 
-//日志记录函数
-function log2log(logContent,logFileName){
-	if not(#logFileName){
-		logFileName = string.replace(io._exepath,"\.exe$","\.log")
+//*点击『流水解码』按钮{{*/
+winform.btn_decode.oncommand = function(id,event){
+	winform.btn_decode.disabled = true //避免重复点击
+	
+	var logToFile = "" //声明保存解码文件的路径
+	if( #string.trim(winform.ed_path.text) ){
+		if( (winform.ed_path.disabled == true) and (string.startWith(winform.ed_path.text,"<缓冲区>:")) ){
+			/*{ 流水内容已加载到global.flowContentRaw全局变量 }*/
+			logToFile = fsys.getTempDir() + "FlowBuffer.ada"
+		}
+		elseif( (winform.ed_path.disabled == false) and io.exist(winform.ed_path.text) ){
+			var flowPath = io.splitpath(winform.ed_path.text)
+			logToFile = flowPath.dir + flowPath.file + ".txt" //保存到同级目录下的txt文件中
+			global.flowContentRaw = string.load(winform.ed_path.text) //读取硬盘中的流水文件内容
+		}
+		else {
+			winform.btn_decode.disabled = false //激活按钮
+			win.msgbox("没有流水文件可以解析！")
+			return "ERR_NO_FLOW_FILE";  //跳过当前函数剩余代码
+		}
 	}
-	if not(#logContent){
-		//win.msgbox('NO DATA TO FILE:\r\n' + logFileName)
-		return false; 
+	
+	//调用『流水解码』函数
+	if not( global.flowContentRaw ){
+		winform.btn_decode.disabled = false //激活按钮
+		win.msgbox("流水为空，无法解析！")
+		return "ERR_NO_FLOW_DATA";  //跳过当前函数剩余代码
 	}
-	string.save(
-		logFileName,
-		"RECORD TIME: " +
-		tostring(time.now()) + '\r\n' +
-		"==============================" + '\r\n' +
-		tostring(logContent) + '\r\n',
-		false // true:append false:cover
-	)
-	return true; 
-}
-
-
-//打开流水文件
-mainForm.btn_fileSelect.oncommand = function(id,event){
-	import fsys.dlg
-	mainForm.edit_filePath.text = fsys.dlg.open('所有文件|*.*|')
-}
-
-
-//调用流水分析函数
-mainForm.btn_opcode.oncommand = function(id,event){
-	if (mainForm.edit_filePath.text == "null")
-	or (not io.exist(mainForm.edit_filePath.text)){
-		win.msgbox("NO SUCH FILE, CONFIRM IT")
-		return false;
-	}
-	flowResult = flowHandle({
-		flowPath = mainForm.edit_filePath.text; //流水文件
-		flowOpcode = mainForm.edit_opcode.text; //流水操作号
-		flowColumn = mainForm.edit_columnFilter.text //过滤指定列
+	global.flowResult = flowHandle({
+			colFilter = string.trim(winform.ed_colFilter.text); //过滤指定列
+			rowFilter = string.trim(winform.ed_rowFilter.text); //过滤指定行
+			rowFilterType = winform.cb_rowFilter.selText; //过滤指定行的方式
+			flowContentRaw = global.flowContentRaw; //原始流水内容
+			userNumber = string.trim(tostring(winform.ed_user.text)) //用户ID
 	})
-	flowFilePath_raw = io.splitpath(mainForm.edit_filePath.text)
-	flowFilePath_log = flowFilePath_raw.dir + flowFilePath_raw.file + ".txt"
-	if(log2log(flowResult, flowFilePath_log)){
-		process.execute(flowFilePath_log)
+	
+	if( log2log(global.flowResult,logToFile) ){ //保存成功后直接打开
+		process.execute(logToFile)
 	}
+	
+	winform.btn_decode.disabled = false //激活按钮
 }
 
 
-//流水处理函数
-function flowHandle(me){
-	var flowReturn = ""
-	var flowContent = string.replace(string.load(me.flowPath), " , ","|")
-	var flowContentSplit = string.split(flowContent, '\n')
+//点击『加载流水』按钮
+winform.btn_load.oncommand = function(id,event){
+	winform.btn_load.disabled = true; winform.btn_load.text = '正在\n加载' //避免重复点击
 
-	//按行处理后，再合并行
-	for(fc_key,fc_line in flowContentSplit){
-		var fc_line_split = string.split(fc_line,"|")
-		var timestamp = tonumber(fc_line_split[5]) //上报时间戳
-		var remark = tostring(fc_line_split[29]) //备注REMARK
-
-		//提取指定操作的流水
-		if (#me.flowOpcode){
-			var opcode = "<" + string.replace(me.flowOpcode,",",">|<") + ">"
-			if not(string.match(fc_line,"\|" + opcode + "\|\|")){continue}
-		}
-
-		//解析上报时间戳
-		if (timestamp == null){continue}
-		fc_line = string.replace(fc_line,timestamp,tostring(time(timestamp)))
-
-		//解析BASE32备注
-		if (string.startWith(remark,"base32")){
-			var b32remark = string.replace(remark,"^base32","")
-			fc_line = string.replace(fc_line,remark,Base32Decoder(b32remark))
-		}
-
-		//输出行中的指定列
-		if (#me.flowColumn){
-			line_pin = string.split(fc_line,"|")
-			line_pos = string.split(me.flowColumn,",")
-			fc_line = ""
-			for(k,v in line_pos){
-				fc_line += (tostring(line_pin[tonumber(v)]) + '\t')
-			}
-		}
-
-		flowReturn += (fc_line + '\r\n')
+	var errorBox = ""
+	if not( tonumber(winform.ed_user.text) )
+			{ errorBox += '用户UID不正确！\n' }
+	if( tonumber(winform.cb_timeStart.selText) > tonumber(winform.cb_timeEnd.selText) )
+			{ errorBox += '开始时间大于结束时间！\n' }
+	
+	if( #errorBox ){
+		win.msgbox(errorBox)
 	}
-	//流水列说明
-	columnTable = {"版本号";"应用ID";"用户IP";"服务器IP";"上报时间";"所在平台";"大区ID";
-				"操作类型";"操作ID";"操作用户UID";"操作用户OPENID";"被操作用户UID";
-				"被操作用户OPENID";"操作用户的等级";"操作来源";"用户操作物品ID";
-				"物品类别";"物品数量";"经验变化值";"经验值总量";"虚拟金币变化值";
-				"虚拟金币总量";"游戏币变化值";"游戏币总量";"在线时长";"登录KEY";
-				"安全KEY校验结果";"反外挂扩展数据";"备注";"在线用户数"}
-	//添加流水列说明
-	if(#me.flowColumn){
-		var columnHeader = ""
-		line_pos = string.split(me.flowColumn,",")
-		for(k,v in line_pos){
-			columnHeader += (tostring(columnTable[tonumber(v)]) + ' ')
+	else{
+		var year_month_day = winform.datetimepick.time
+		year_month_day.format="%Y-%m-%d";
+
+		returnStat, global.flowContentRaw = get_flow({
+				biscuit = global.biscuit;
+				appid = iniFile.read("rabbet","appid","0");
+				locate = iniFile.read("locate",winform.cb_locate.selText);
+				domain = iniFile.read("domain",winform.cb_domain.selText);
+				baseday = tostring(year_month_day);
+				timeStart = string.replace( winform.cb_timeStart.selText + ":00","\:","%3A" );
+				timeEnd = string.replace( winform.cb_timeEnd.selText + ":00","\:","%3A" );
+				user = tostring( winform.ed_user.text );
+				debug = winform.chk_debug.checked
+		})
+
+		if not(returnStat){
+			qq_login() //需要登录获取加载流水的权限
 		}
-		return (columnHeader + '\r\n' + flowReturn); 
+		else {
+			winform.ed_path.text = "<缓冲区>:" + tostring(year_month_day) + "[" + winform.ed_user.text + "]"
+			winform.ed_path.disabled = true
+		};
+	}
+	
+	winform.btn_load.disabled = false; winform.btn_load.text = '加载到\n缓冲区' //启用按钮
+}
+
+
+//登录按钮
+winform.btn_login.oncommand = function(id,event){
+	qq_login()
+}
+
+
+//打开硬盘上的流水文件
+winform.btn_path.oncommand = function(id,event){
+	winform.ed_path.disabled = false
+	winform.ed_path.text = fsys.dlg.open("所有文件(*.*)|*.*|")
+}
+
+
+//保存流水到硬盘文件
+winform.btn_save.oncommand = function(id,event){
+	if(win.msgboxTest('点"确定"保存最原始的数据\n点"取消"保存解析后的流水')){
+		if( (winform.ed_path.disabled == true) and (string.startWith(winform.ed_path.text,"<缓冲区>:")) ){
+			var save_path = fsys.dlg.save("默认文件类型(csv)|*.csv|所有文件类型(*.*)|*.*|","保存缓冲区数据到文件")
+			if( #save_path ){string.save( save_path,global.flowContentRaw )}
+		}
+		else {winform.msgbox("缓存区中没有数据！")}
 	}
 	else {
-		return (table.tostring(columnTable) + '\r\n' + string.replace(flowReturn,"|"," "))
+		if( #global.flowResult ){
+			var save_path = fsys.dlg.save("默认文件类型(txt)|*.txt|所有文件类型(*.*)|*.*|","保存解码的流水到文件")
+			if( #save_path ){string.save( save_path,global.flowResult )}
+		}
+		else {winform.msgbox("没有被解码的流水！")}
 	}
 }
 
 
+//用QQ登录罗盘
+qq_login = function(){
+	var child,wb = winform.loadForm("\res\qq_login.aau",winform /*指定父窗口*/ );
+	child.login(15004102); //认证ID，取自原登录页面
+}
+
+
+//退出程序时记录COOKIES
+winform.wndproc = function(hwnd,message,wParam,lParam){
+	select(message) {
+		case 0x10/*_WM_CLOSE*/ {
+			iniFile.write("caches","biscuit",global.biscuit)
+		}
+	}
+}
+
+
+/*预处理{{*/
+iniFile=string.replace(io._exepath,"\.\w*$","\.ini")
+if not( io.exist(iniFile) ){//若不存在配置文件则从res中释放
+	string.save(iniFile,string.load("\res\config.ini"))
+}
+iniFile = fsys.ini(iniFile)
+//全局性变量
+global.biscuit="" //COOKIES
+global.flowResult = "" //流水解码结果
+global.flowContentRaw = "" //原始流水数据
+//请求头
+global.biscuit = iniFile.read("caches","biscuit","")
+//地区
+winform.cb_locate.items=iniFile.readKeys("locate")
+winform.cb_locate.selIndex=1
+//平台
+winform.cb_domain.items=iniFile.readKeys("domain")
+winform.cb_domain.selIndex=1
+//显示明细
+winform.chk_debug.checked=tonumber(iniFile.read("rabbet","debugMode","0"))
+//过滤方式、显示列
+winform.cb_rowFilter.selIndex=1
+winform.ed_colFilter.text=iniFile.read("column","display","")
+//时间范围
+winform.cb_timeStart.selIndex=1
+winform.cb_timeEnd.selIndex = #winform.cb_timeEnd.items
 //预加载流水文件
-if(_CMDLINE){
-	mainForm.edit_filePath.text = string.replace(_CMDLINE,'"','')
-}
+if(_CMDLINE){ winform.ed_path.text=string.replace(_CMDLINE,'"','') }
+//标题表明APPID
+winform.text = "罗盘【" ++ iniFile.read("rabbet","appid","0") ++ "】"
+/*}}*/
 
 
-//读取配置文件
-iniFile = fsys.ini(string.replace(io._exepath,"\.exe$","\.ini"))
-iniColumnFilter = iniFile.read("config","column","")
-if not(iniColumnFilter){
-	iniFile.write("config","column","")
-}
-else {
-	mainForm.edit_columnFilter.text = iniColumnFilter
-}
-
-
-//显示主界面
-mainForm.show()
+//以下是窗口消息循环
+winform.show() 
 win.loopMessage()

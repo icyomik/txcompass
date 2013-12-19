@@ -1,0 +1,19 @@
+//日志记录函数
+log2log = function(logContent="", logFileName="") {
+	if not(#logContent){
+		return false; 
+	}
+	if not(#logFileName){
+		logFileName = string.replace(io._exepath,"\.\w*$","\.log")
+	}
+	
+	string.save(
+		logFileName,
+		"GENERATE TIME: " +
+		tostring(time.now()) + '\r\n' +
+		"================================" + '\r\n' +
+		tostring(logContent) + '\r\n',
+		false // true:append false:cover
+	)
+	return true; 
+}

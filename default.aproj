@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="gb2312"?>
-<project ver="0.60" name="流水解码" libEmbed="true" icon="mix\icon.ico" CompanyName="" FileDescription="CODE BY JTWO" LegalCopyright="" ProductName="" InternalName="" FileVersion="0.0.0.3" ProductVersion="0.0.0.3" publishDir="/Publish/" ui="win" output="流水解码.exe">
-	<file name="main.aau" path="main.aau"/>
+<project ver="0.60" name="腾讯罗盘" libEmbed="true" icon="mix\icon.ico" CompanyName="" FileDescription="Code By Jtwo" LegalCopyright="" ProductName="" InternalName="" FileVersion="1.0.0.3" ProductVersion="1.0.0.3" publishDir="\Publish\" ui="win" output="腾讯罗盘.exe">
+	<file name="main.aau" path="main.aau" comment="main.aau"/>
 	<folder name="资源文件" path="res" embed="true">
-		<file name="compass.ini" path="res\compass.ini" comment="res\compass.ini"/>
+		<file name="qq_login.aau" path="res\qq_login.aau" comment="res\qq_login.aau"/>
+		<file name="logger.aau" path="res\logger.aau" comment="res\logger.aau"/>
+		<file name="get_flow.aau" path="res\get_flow.aau" comment="res\get_flow.aau"/>
+		<file name="flow_handle.aau" path="res\flow_handle.aau" comment="res\flow_handle.aau"/>
+		<file name="config.ini" path="res\config.ini" comment="res\config.ini"/>
+		<file name="b32decoder.aau" path="res\b32decoder.aau" comment="res\b32decoder.aau"/>
 	</folder>
 </project>
