@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="gb2312"?>
-<project ver="0.60" name="腾讯罗盘" libEmbed="true" icon="mix\icon.ico" CompanyName="" FileDescription="Code By Jtwo" LegalCopyright="" ProductName="" InternalName="" FileVersion="1.0.0.3" ProductVersion="1.0.0.3" publishDir="\Publish\" ui="win" output="腾讯罗盘.exe">
-	<file name="main.aau" path="main.aau" comment="main.aau"/>
+<project ver="0.60" name="腾讯罗盘流水" libEmbed="true" icon="\mix\icon.ico" CompanyName="" FileDescription="CODE BY JTWO" LegalCopyright="" ProductName="" InternalName="" FileVersion="2.0.1.15" ProductVersion="2.0.1.15" publishDir="/Publish/" ui="win" output="腾讯罗盘流水.exe">
+	<file name="main.aau" path="main.aau"/>
 	<folder name="资源文件" path="res" embed="true">
-		<file name="qq_login.aau" path="res\qq_login.aau" comment="res\qq_login.aau"/>
+		<file name="readflow.aau" path="res\readflow.aau" comment="res\readflow.aau"/>
+		<file name="qqlogin.aau" path="res\qqlogin.aau" comment="res\qqlogin.aau"/>
+		<file name="mixfunc.aau" path="res\mixfunc.aau" comment="res\mixfunc.aau"/>
 		<file name="logger.aau" path="res\logger.aau" comment="res\logger.aau"/>
-		<file name="get_flow.aau" path="res\get_flow.aau" comment="res\get_flow.aau"/>
-		<file name="flow_handle.aau" path="res\flow_handle.aau" comment="res\flow_handle.aau"/>
-		<file name="config.ini" path="res\config.ini" comment="res\config.ini"/>
-		<file name="b32decoder.aau" path="res\b32decoder.aau" comment="res\b32decoder.aau"/>
+		<file name="handleflow.aau" path="res\handleflow.aau" comment="res\handleflow.aau"/>
+	</folder>
+	<folder name="配置" path="etc" comment="etc" embed="true">
+		<file name="config.ini" path="etc\config.ini" comment="etc\config.ini"/>
 	</folder>
 </project>

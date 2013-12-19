@@ -1,11 +1,13 @@
-//BASE32½âÂëº¯Êý
-Base32Decoder = function(b32str=""){
-	if(#b32str){
+//BASE32¿â
+namespace base32;
+import string;
+
+decode = function(b32str=""){
+	if( #b32str ){
 		var mbit = 0
 		var vbit = 0
 		var b32ret = ""
-		var j = string.len(b32str)
-		for(i=1;j;1){
+		for(i=1; string.len(b32str); 1){
 			mbit <<= 5
 			if(b32str[i] >= 'a'# and b32str[i] <= 'z'#)
 				{mbit += (b32str[i] - 97)}
@@ -19,8 +21,11 @@ Base32Decoder = function(b32str=""){
 			}
 		}
 		return b32ret; 
-	}
-	else {
+	} else {
 		return b32str; 
 	}
+}
+
+encode = function(b32str=""){
+	return false; 
 }
