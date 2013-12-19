@@ -1,0 +1,174 @@
+import win.ui
+import win.ui.atom
+import fsys.ini
+/*DSG{{*/
+mainForm = ..win.form(text="腾讯罗盘解码器 by iCyOMiK";right=431;bottom=135;max=false;parent=...)
+mainForm.add(
+btn_fileSelect={cls="button";text="选择流水";left=344;top=16;right=416;bottom=40;z=3};
+btn_opcode={cls="button";text="流水解码";left=344;top=56;right=416;bottom=120;z=1};
+edit_columnFilter={cls="edit";left=128;top=56;right=328;bottom=80;align="center";border=1;edge=1;z=4};
+edit_filePath={cls="edit";left=16;top=16;right=328;bottom=40;align="center";border=1;edge=1;z=2};
+edit_opcode={cls="edit";left=128;top=96;right=328;bottom=120;align="center";border=1;edge=1;z=5};
+lbl_column={cls="static";text="流水显示列";left=16;top=56;right=120;bottom=81;align="center";color=0;font=LOGFONT( name='微软雅黑';h=-16 );transparent=1;z=7};
+lbl_opcode={cls="static";text="流水操作号";left=16;top=96;right=120;bottom=120;align="center";color=0;font=LOGFONT( name='微软雅黑';h=-16 );transparent=1;z=6}
+)
+/*}}*/
+
+//BASE32解码函数
+function Base32Decoder(b32str=""){
+	if(#b32str){
+		var mbit = 0
+		var vbit = 0
+		var b32ret = ""
+		var j = string.len(b32str)
+		for(i=1;j;1){
+			mbit <<= 5
+			if(b32str[i] >= 'a'# and b32str[i] <= 'z'#)
+				{mbit += (b32str[i] - 97)}
+			elseif(b32str[i] >= '2'# and b32str[i] <= '7'#)
+				{mbit += (b32str[[i]] + 24)}
+			vbit += 5
+			while(vbit >= 8){
+				vbit -= 8
+				b32ret += string.pack(mbit >> vbit)
+				mbit &= ((1 << vbit) - 1)
+			}
+		}
+		return b32ret; 
+	}
+	else {
+		return b32str; 
+	}
+}
+
+
+//日志记录函数
+function log2log(logContent,logFileName){
+	if not(#logFileName){
+		logFileName = string.replace(io._exepath,"\.exe$","\.log")
+	}
+	if not(#logContent){
+		//win.msgbox('NO DATA TO FILE:\r\n' + logFileName)
+		return false; 
+	}
+	string.save(
+		logFileName,
+		"RECORD TIME: " +
+		tostring(time.now()) + '\r\n' +
+		"==============================" + '\r\n' +
+		tostring(logContent) + '\r\n',
+		false // true:append false:cover
+	)
+	return true; 
+}
+
+
+//打开流水文件
+mainForm.btn_fileSelect.oncommand = function(id,event){
+	import fsys.dlg
+	mainForm.edit_filePath.text = fsys.dlg.open('所有文件|*.*|')
+}
+
+
+//调用流水分析函数
+mainForm.btn_opcode.oncommand = function(id,event){
+	if (mainForm.edit_filePath.text == "null")
+	or (not io.exist(mainForm.edit_filePath.text)){
+		win.msgbox("NO SUCH FILE, CONFIRM IT")
+		return false;
+	}
+	flowResult = flowHandle({
+		flowPath = mainForm.edit_filePath.text; //流水文件
+		flowOpcode = mainForm.edit_opcode.text; //流水操作号
+		flowColumn = mainForm.edit_columnFilter.text //过滤指定列
+	})
+	flowFilePath_raw = io.splitpath(mainForm.edit_filePath.text)
+	flowFilePath_log = flowFilePath_raw.dir + flowFilePath_raw.file + ".txt"
+	if(log2log(flowResult, flowFilePath_log)){
+		process.execute(flowFilePath_log)
+	}
+}
+
+
+//流水处理函数
+function flowHandle(me){
+	var flowReturn = ""
+	var flowContent = string.replace(string.load(me.flowPath), " , ","|")
+	var flowContentSplit = string.split(flowContent, '\n')
+
+	//按行处理后，再合并行
+	for(fc_key,fc_line in flowContentSplit){
+		var fc_line_split = string.split(fc_line,"|")
+		var timestamp = tonumber(fc_line_split[5]) //上报时间戳
+		var remark = tostring(fc_line_split[29]) //备注REMARK
+
+		//提取指定操作的流水
+		if (#me.flowOpcode){
+			var opcode = "<" + string.replace(me.flowOpcode,",",">|<") + ">"
+			if not(string.match(fc_line,"\|" + opcode + "\|\|")){continue}
+		}
+
+		//解析上报时间戳
+		if (timestamp == null){continue}
+		fc_line = string.replace(fc_line,timestamp,tostring(time(timestamp)))
+
+		//解析BASE32备注
+		if (string.startWith(remark,"base32")){
+			var b32remark = string.replace(remark,"^base32","")
+			fc_line = string.replace(fc_line,remark,Base32Decoder(b32remark))
+		}
+
+		//输出行中的指定列
+		if (#me.flowColumn){
+			line_pin = string.split(fc_line,"|")
+			line_pos = string.split(me.flowColumn,",")
+			fc_line = ""
+			for(k,v in line_pos){
+				fc_line += (tostring(line_pin[tonumber(v)]) + '\t')
+			}
+		}
+
+		flowReturn += (fc_line + '\r\n')
+	}
+	//流水列说明
+	columnTable = {"版本号";"应用ID";"用户IP";"服务器IP";"上报时间";"所在平台";"大区ID";
+				"操作类型";"操作ID";"操作用户UID";"操作用户OPENID";"被操作用户UID";
+				"被操作用户OPENID";"操作用户的等级";"操作来源";"用户操作物品ID";
+				"物品类别";"物品数量";"经验变化值";"经验值总量";"虚拟金币变化值";
+				"虚拟金币总量";"游戏币变化值";"游戏币总量";"在线时长";"登录KEY";
+				"安全KEY校验结果";"反外挂扩展数据";"备注";"在线用户数"}
+	//添加流水列说明
+	if(#me.flowColumn){
+		var columnHeader = ""
+		line_pos = string.split(me.flowColumn,",")
+		for(k,v in line_pos){
+			columnHeader += (tostring(columnTable[tonumber(v)]) + ' ')
+		}
+		return (columnHeader + '\r\n' + flowReturn); 
+	}
+	else {
+		return (table.tostring(columnTable) + '\r\n' + string.replace(flowReturn,"|"," "))
+	}
+}
+
+
+//预加载流水文件
+if(_CMDLINE){
+	mainForm.edit_filePath.text = string.replace(_CMDLINE,'"','')
+}
+
+
+//读取配置文件
+iniFile = fsys.ini(string.replace(io._exepath,"\.exe$","\.ini"))
+iniColumnFilter = iniFile.read("config","column","")
+if not(iniColumnFilter){
+	iniFile.write("config","column","")
+}
+else {
+	mainForm.edit_columnFilter.text = iniColumnFilter
+}
+
+
+//显示主界面
+mainForm.show()
+win.loopMessage()

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="gb2312"?>
+<project ver="0.60" name="流水解码" libEmbed="true" icon="mix\icon.ico" CompanyName="" FileDescription="CODE BY JTWO" LegalCopyright="" ProductName="" InternalName="" FileVersion="0.0.0.3" ProductVersion="0.0.0.3" publishDir="/Publish/" ui="win" output="流水解码.exe">
+	<file name="main.aau" path="main.aau"/>
+	<folder name="资源文件" path="res" embed="true">
+		<file name="compass.ini" path="res\compass.ini" comment="res\compass.ini"/>
+	</folder>
+</project>
