@@ -6,40 +6,35 @@ loadcode("\res\logger.aau")() //记录日志到文件
 loadcode("\res\readflow.aau")() //下载罗盘流水
 loadcode("\res\handleflow.aau")() //处理流水内容
 /*DSG{{*/
-var mainForm = ..win.form( parent=...;bottom=255;max=false;text="腾讯罗盘流水";border="dialog frame";right=431 )
-mainForm.add( 
-cb_begintime={ bottom=104;color=0;right=120;left=56;top=80;font=LOGFONT( name='黑体';h=-16 );z=10;
-items={ [1]="00:00";[2]="02:00";[3]="04:00";[4]="06:00";[5]="08:00";[6]="10:00";[7]="12:00";[8]="14:00";[9]="16:00";[10]="18:00";[11]="20:00";[12]="22:00" };mode="dropdownlist";edge=1;cls="combobox" };
-gb_mright={ bottom=152;color=0;right=416;left=128;top=64;font=LOGFONT( name='Cambria' );z=6;cls="groupbox" };
-ed_filter={ bottom=224;autohscroll=false;color=0;right=296;left=120;top=200;font=LOGFONT( name='微软雅黑';h=-16 );align="center";z=14;hidesel=1;autovscroll=false;edge=1;cls="edit" };
-btn_web={ bottom=56;color=0;right=336;left=304;top=32;font=LOGFONT( name='微软雅黑' );z=26;text="网页";cls="button" };
-cb_game={ bottom=56;color=0;right=280;left=176;top=32;font=LOGFONT( name='黑体';h=-16 );z=22;
-items={  };mode="dropdownlist";edge=1;cls="combobox" };
-dtp_date={ bottom=136;color=0;right=296;left=176;top=112;font=LOGFONT( name='黑体';h=-16 );z=9;edge=1;cls="datetimepick" };
-btn_save={ bottom=104;color=0;right=296;left=280;top=80;font=LOGFONT( name='微软雅黑';h=-16 );z=12;text="S";cls="button" };
-btn_debug={ bottom=56;color=0;right=368;left=336;top=32;font=LOGFONT( name='微软雅黑' );z=25;text="调试";cls="button" };
-cb_plat={ bottom=56;color=0;right=120;left=32;top=32;font=LOGFONT( name='黑体';h=-16 );z=8;
-items={  };mode="dropdownlist";edge=1;cls="combobox" };
-st_begintime={ bottom=104;color=0;nWrap=1;left=32;align="center";top=80;font=LOGFONT( name='微软雅黑';h=-16 );center=1;transparent=1;right=56;text="始";z=21;cls="static" };
-st_outline={ disabled=1;bottom=160;align="center";right=400;left=32;top=144;font=LOGFONT( name='宋体' );center=1;z=15;color=0;border=1;cls="static" };
-ed_column={ bottom=192;autohscroll=false;color=0;right=296;left=120;top=168;font=LOGFONT( name='微软雅黑';h=-14 );align="center";z=13;hidesel=1;autovscroll=false;edge=1;cls="edit" };
-cb_filter={ bottom=224;color=0;right=112;left=32;top=200;font=LOGFONT( name='黑体';h=-16 );z=17;
-items={ [1]="#操作号";[2]="@关键字" };mode="dropdownlist";edge=1;cls="combobox" };
-gb_mleft={ bottom=152;color=0;right=128;left=16;top=64;font=LOGFONT( name='Cambria' );z=5;cls="groupbox" };
-st_endtime={ bottom=136;color=0;nWrap=1;left=32;align="center";top=112;font=LOGFONT( name='微软雅黑';h=-16 );center=1;transparent=1;right=56;text="终";z=23;cls="static" };
-btn_file={ bottom=56;color=0;right=296;left=280;top=32;font=LOGFONT( name='微软雅黑';h=-16 );z=27;text="F";cls="button" };
-st_user={ bottom=104;color=0;nWrap=1;left=136;align="center";top=80;font=LOGFONT( name='微软雅黑';h=-16 );center=1;transparent=1;right=176;text="用户";z=18;cls="static" };
-gb_head={ bottom=72;color=0;right=416;left=16;top=8;font=LOGFONT( name='Cambria' );z=7;cls="groupbox" };
-st_game={ bottom=56;color=0;nWrap=1;left=136;align="center";top=32;font=LOGFONT( name='微软雅黑';h=-16 );center=1;transparent=1;right=176;text="游戏";z=19;cls="static" };
-btn_login={ bottom=56;color=0;right=400;left=368;top=32;font=LOGFONT( name='微软雅黑' );z=24;text="登录";cls="button" };
-st_date={ bottom=136;color=0;nWrap=1;left=136;align="center";top=112;font=LOGFONT( name='微软雅黑';h=-16 );center=1;transparent=1;right=176;text="日期";z=20;cls="static" };
-gb_main={ bottom=240;color=0;right=416;left=16;top=8;font=LOGFONT( name='Cambria' );z=4;cls="groupbox" };
-st_column={ bottom=191;color=0;nWrap=1;left=32;align="center";top=168;font=LOGFONT( name='黑体';h=-16 );center=1;transparent=1;right=112;text="数据显示列";z=16;cls="static" };
-cb_endtime={ bottom=136;color=0;right=120;left=56;top=112;font=LOGFONT( name='黑体';h=-16 );z=11;
-items={ [1]="01:59";[2]="03:59";[3]="05:59";[4]="07:59";[5]="09:59";[6]="11:59";[7]="13:59";[8]="15:59";[9]="17:59";[10]="19:59";[11]="21:59";[12]="23:59" };mode="dropdownlist";edge=1;cls="combobox" };
-btn_load={ bottom=136;color=0;right=400;left=304;top=80;font=LOGFONT( name='微软雅黑';h=-19 );z=2;text="加载罗盘";cls="button" };
-ed_user={ right=280;num=1;bottom=104;color=0;hidesel=1;left=176;top=80;font=LOGFONT( name='微软雅黑';h=-16 );z=3;align="center";edge=1;cls="edit" };
-btn_decode={ bottom=224;color=0;right=400;left=304;top=168;font=LOGFONT( name='微软雅黑';h=-19 );z=1;text="解码流水";cls="button" }
+var mainForm = ..win.form(text="腾讯罗盘流水";right=431;bottom=255;border="dialog frame";max=false;parent=...)
+mainForm.add(
+btn_debug={cls="button";text="调试";left=336;top=32;right=368;bottom=56;color=0;font=LOGFONT( name='微软雅黑' );z=25};
+btn_decode={cls="button";text="解码流水";left=304;top=168;right=400;bottom=224;color=0;font=LOGFONT( name='微软雅黑';h=-19 );z=1};
+btn_file={cls="button";text="F";left=280;top=32;right=296;bottom=56;color=0;font=LOGFONT( name='微软雅黑';h=-16 );z=27};
+btn_load={cls="button";text="加载罗盘";left=304;top=80;right=400;bottom=136;color=0;font=LOGFONT( name='微软雅黑';h=-19 );z=2};
+btn_login={cls="button";text="登录";left=368;top=32;right=400;bottom=56;color=0;font=LOGFONT( name='微软雅黑' );z=24};
+btn_save={cls="button";text="S";left=280;top=80;right=296;bottom=104;color=0;font=LOGFONT( name='微软雅黑';h=-16 );z=12};
+btn_web={cls="button";text="网页";left=304;top=32;right=336;bottom=56;color=0;font=LOGFONT( name='微软雅黑' );z=26};
+cb_begintime={cls="combobox";left=56;top=80;right=120;bottom=104;color=0;edge=1;font=LOGFONT( name='黑体';h=-16 );items={"00:00";"02:00";"04:00";"06:00";"08:00";"10:00";"12:00";"14:00";"16:00";"18:00";"20:00";"22:00"};mode="dropdownlist";z=10};
+cb_endtime={cls="combobox";left=56;top=112;right=120;bottom=136;color=0;edge=1;font=LOGFONT( name='黑体';h=-16 );items={"01:59";"03:59";"05:59";"07:59";"09:59";"11:59";"13:59";"15:59";"17:59";"19:59";"21:59";"23:59"};mode="dropdownlist";z=11};
+cb_filter={cls="combobox";left=32;top=200;right=112;bottom=224;color=0;edge=1;font=LOGFONT( name='黑体';h=-16 );items={"#操作号";"@关键字"};mode="dropdownlist";z=17};
+cb_game={cls="combobox";left=176;top=32;right=280;bottom=56;color=0;edge=1;font=LOGFONT( name='黑体';h=-16 );items={};mode="dropdownlist";z=22};
+cb_plat={cls="combobox";left=32;top=32;right=120;bottom=56;color=0;edge=1;font=LOGFONT( name='黑体';h=-16 );items={};mode="dropdownlist";z=8};
+dtp_date={cls="datetimepick";left=176;top=112;right=296;bottom=136;color=0;edge=1;font=LOGFONT( name='黑体';h=-16 );z=9};
+ed_column={cls="edit";left=120;top=168;right=296;bottom=192;align="center";autohscroll=false;autovscroll=false;color=0;edge=1;font=LOGFONT( name='微软雅黑';h=-14 );hidesel=1;z=13};
+ed_filter={cls="edit";left=120;top=200;right=296;bottom=224;align="center";autohscroll=false;autovscroll=false;color=0;edge=1;font=LOGFONT( name='微软雅黑';h=-16 );hidesel=1;z=14};
+ed_user={cls="edit";left=176;top=80;right=280;bottom=104;align="center";color=0;edge=1;font=LOGFONT( name='微软雅黑';h=-16 );hidesel=1;num=1;z=3};
+gb_head={cls="groupbox";left=16;top=8;right=416;bottom=72;color=0;font=LOGFONT( name='Cambria' );z=7};
+gb_main={cls="groupbox";left=16;top=8;right=416;bottom=240;color=0;font=LOGFONT( name='Cambria' );z=4};
+gb_mleft={cls="groupbox";left=16;top=64;right=128;bottom=152;color=0;font=LOGFONT( name='Cambria' );z=5};
+gb_mright={cls="groupbox";left=128;top=64;right=416;bottom=152;color=0;font=LOGFONT( name='Cambria' );z=6};
+st_begintime={cls="static";text="始";left=32;top=80;right=56;bottom=104;align="center";center=1;color=0;font=LOGFONT( name='微软雅黑';h=-16 );nWrap=1;transparent=1;z=21};
+st_column={cls="static";text="数据显示列";left=32;top=168;right=112;bottom=191;align="center";center=1;color=0;font=LOGFONT( name='黑体';h=-16 );nWrap=1;transparent=1;z=16};
+st_date={cls="static";text="日期";left=136;top=112;right=176;bottom=136;align="center";center=1;color=0;font=LOGFONT( name='微软雅黑';h=-16 );nWrap=1;transparent=1;z=20};
+st_endtime={cls="static";text="终";left=32;top=112;right=56;bottom=136;align="center";center=1;color=0;font=LOGFONT( name='微软雅黑';h=-16 );nWrap=1;transparent=1;z=23};
+st_game={cls="static";text="游戏";left=136;top=32;right=176;bottom=56;align="center";center=1;color=0;font=LOGFONT( name='微软雅黑';h=-16 );nWrap=1;transparent=1;z=19};
+st_outline={cls="static";left=32;top=144;right=400;bottom=160;align="center";border=1;center=1;color=0;disabled=1;font=LOGFONT( name='宋体' );z=15};
+st_user={cls="static";text="用户";left=136;top=80;right=176;bottom=104;align="center";center=1;color=0;font=LOGFONT( name='微软雅黑';h=-16 );nWrap=1;transparent=1;z=18}
 )
 /*}}*/
 
@@ -138,8 +133,10 @@ mainForm.btn_save.oncommand = function(id,event){
 
 //点击『加载罗盘』按钮
 mainForm.btn_load.oncommand = function(id,event){
+	if(string.trim(mainForm.ed_user.text) == ""){
+		return ; //没有输入用户UID则返回
+	}
 	mainForm.btn_load.disabled = true; mainForm.btn_load.text = "加载ING" //避免重复点击
-
 
 	var err_msgbox = ""
 	if(mainForm.ed_user.text != tonumber(mainForm.ed_user.text)){
