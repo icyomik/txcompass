@@ -1,10 +1,18 @@
-//QQ登录模块，要用child.doModal(mainForm)打开
+
+/*QQ登录窗口，调用例子{{*/
+qqLogin = function(){
+	var qq,wb = mainForm.loadForm("\res\qqlogin.aau", mainForm/*父窗口*/);
+	qq.login(15004102/*,true*/) //认证ID，取自原登录页面
+	var qqlogin = qq.doModal(mainForm)
+}
+/*}}*/
+
 import inet;
 import win.ui;
 import web.form;
 /*DSG{{*/
-var winform = ..win.form( exmode="none";parent=...;bottom=215;max=false;text="请登录有权限的帐号";border="dialog frame";right=391 )
-winform.add(  )
+var winform = ..win.form(text="请登录有权限的帐号";right=391;bottom=215;border="dialog frame";exmode="none";max=false;parent=...)
+winform.add()
 /*}}*/
 
 /*登录窗口函数-开始*/
